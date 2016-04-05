@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # input: food plus proche
 # output: x, y
+import sys
 import random
 import pygame
 from pygame.locals import *
@@ -52,10 +53,11 @@ class Grid(object):
                 except:
                     colour = [255, 255, 255]
 
-                window.fill(colour, (ligne * self.pixel_size,
-                                     colone * self.pixel_size,
-                                     self.pixel_size - 1,
-                                     self.pixel_size - 1))
+                if colour != [0, 0, 0]:
+                    window.fill(colour, (ligne * self.pixel_size,
+                                         colone * self.pixel_size,
+                                         self.pixel_size - 1,
+                                         self.pixel_size - 1))
 
     def clean_grid(self):
         """nettoie la grille pour 'voir' les senseur"""
@@ -69,7 +71,6 @@ class Grid(object):
     def update(self, window):
         self.add_random_food()
         self.add_random_food()
-        self.display(window)
         # self.clean_grid()
 
 
@@ -191,6 +192,18 @@ class Cell(object):
         """Met à jour la cellule"""
         self.capture(grid.grid)
         self.brain.update(self.sensor)
+        print(self.sensor, self.brain.array_output)
+        #print(self.sensor, self.brain.array_output)
+        #targets = [0, 0]
+        #if self.sensor[0] < 0:
+        #    targets[0] = 0.4
+        #else:
+        #    targets[0] = 0.6
+        #if self.sensor[1] < 0:
+        #    targets[1] = 0.4
+        #else:
+        #    targets[0] = 0.6
+        #error = self.brain.back_propagation(targets, 0.5, 0.1)
         self.move()
         # self.collapse_window(grid)
         self.life.update()
@@ -256,6 +269,222 @@ class Graph(object):
         plt.draw()
 
 
+class Interface(object):
+    def __init__(self, window):
+        self.window = window
+        self.cell_to_display = None
+
+    def update(self, mode):
+        pygame.draw.line(self.window, (255, 255, 255),
+                        (constants.pixel_size * constants.width, 0),
+                        (constants.pixel_size * constants.width, constants.pixel_size * constants.height))
+
+        pygame.draw.line(self.window, (255, 255, 255),
+                        (constants.pixel_size * constants.width, constants.pixel_size * constants.height / 2),
+                        (constants.pixel_size * constants.width * 1.5, constants.pixel_size * constants.height / 2))
+
+        if mode == "start":
+            pygame.draw.rect(self.window, (255, 255, 255),
+                             [constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 408,
+                              10, 30])
+            pygame.draw.rect(self.window, (255, 255, 255),
+                             [constants.pixel_size * constants.width + 72, constants.pixel_size * constants.height / 2 + 408,
+                              10, 30])
+        elif mode == "stop":
+            pygame.draw.polygon(self.window, (255, 255, 255),
+                               [(constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 408),
+                                (constants.pixel_size * constants.width + 79, constants.pixel_size * constants.height / 2 + 422),
+                                (constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 438)])
+
+        # Display chosen cell
+        if self.cell_to_display is not None:
+            self.display_cell_info()
+
+    def display_cell_info(self):
+        """Affiche les infos de la cellule sélèctionnée à l'écran"""
+        font = pygame.font.Font('fonts/visitor1.ttf', 20)
+
+        text = font.render("fitness:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 50,
+                                 centery=13)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(self.cell_to_display.feeding), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 110,
+                                 centery=13)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Pos:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 30,
+                                 centery=30)
+        self.window.blit(text, text_pos)
+
+        text = font.render("x:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
+                                 centery=30)
+        self.window.blit(text, text_pos)
+
+        text = font.render("y:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
+                                 centery=30)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(self.cell_to_display.x), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
+                                 centery=30)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(self.cell_to_display.y), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+                                 centery=30)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Input:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 43,
+                                 centery=47)
+        self.window.blit(text, text_pos)
+
+        text = font.render("x:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
+                                 centery=47)
+        self.window.blit(text, text_pos)
+
+        text = font.render("y:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
+                                 centery=47)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(self.cell_to_display.sensor[0], 3), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
+                                 centery=47)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(self.cell_to_display.sensor[1], 3), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+                                 centery=47)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Output:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 50,
+                                 centery=64)
+        self.window.blit(text, text_pos)
+
+        text = font.render("x:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
+                                 centery=64)
+        self.window.blit(text, text_pos)
+
+        text = font.render("y:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
+                                 centery=64)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[0], 3)), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
+                                 centery=64)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[1], 3)), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+                                 centery=64)
+        self.window.blit(text, text_pos)
+
+    def display_info(self, window, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output):
+        """Affiche les infos sur la simulation à l'écran"""
+        font = pygame.font.Font('fonts/visitor1.ttf', 20)
+
+        text = font.render("Generation: ", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 72,
+                                 centery=constants.pixel_size * constants.height / 2 + 15)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(generation), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 155,
+                                 centery=constants.pixel_size * constants.height / 2 + 15)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Population Number:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 110,
+                                 centery=constants.pixel_size * constants.height / 2 + 45)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(len_cells), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+                                 centery=constants.pixel_size * constants.height / 2 + 45)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Dead Population Number:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
+                                 centery=constants.pixel_size * constants.height / 2 + 62)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(len_dead_cells), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 290,
+                                 centery=constants.pixel_size * constants.height / 2 + 62)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Average Fitness:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 97,
+                                 centery=constants.pixel_size * constants.height / 2 + 100)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(average_fitness), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+                                 centery=constants.pixel_size * constants.height / 2 + 100)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Best Cells:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 72,
+                                 centery=constants.pixel_size * constants.height / 2 + 130)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(best_cells), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+                                 centery=constants.pixel_size * constants.height / 2 + 150)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Average Output:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 97,
+                                 centery=constants.pixel_size * constants.height / 2 + 180)
+        self.window.blit(text, text_pos)
+
+        text = font.render("x:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 60,
+                                 centery=constants.pixel_size * constants.height / 2 + 200)
+        self.window.blit(text, text_pos)
+
+        text = font.render("y:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 60,
+                                 centery=constants.pixel_size * constants.height / 2 + 220)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(round(average_output[0], 3)), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
+                                 centery=constants.pixel_size * constants.height / 2 + 200)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(round(average_output[1], 3)), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
+                                 centery=constants.pixel_size * constants.height / 2 + 220)
+        self.window.blit(text, text_pos)
+
+
 def add_cell(grid, first_gen, weight_in=[], weight_out=[]):
     return Cell('cell', grid, first_gen, weight_in, weight_out)
 
@@ -268,55 +497,6 @@ def init_population(grid, cells):
 
 
 # Display ----------------------------------------------------------------
-
-
-def display_info(window, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output):
-    """Affiche les infos sur la simulation à l'écran"""
-    font = pygame.font.Font('fonts/visitor1.ttf', 20)
-
-    init_text = font.render("Population Number: {}".format(len_cells), 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=140, centery=20)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("Dead Population Number: {}".format(len_dead_cells), 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=165, centery=40)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("Generation: {}".format(generation), 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=90, centery=60)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("Average Fitness: {}".format(average_fitness), 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=120, centery=80)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("Best Cells:", 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=85, centery=100)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("{}".format(best_cells), 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=320, centery=120)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("Average Output:", 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=110, centery=140)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("x:", 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=40, centery=160)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("y:", 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=40, centery=180)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("{}".format(round(average_output[0], 3)), 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=80, centery=160)
-    window.blit(init_text, init_text_pos)
-
-    init_text = font.render("{}".format(round(average_output[1], 3)), 1, (255, 255, 255))
-    init_text_pos = init_text.get_rect(centerx=80, centery=180)
-    window.blit(init_text, init_text_pos)
 
 
 def print_info(cell):
@@ -344,6 +524,7 @@ def mutate_population(population):
     print("[*] Mutate Population")
     for individual in population:
         if random.random() <= constants.mutate_chance:
+            print("[*] Mutate")
             first_place_to_mutate = constants.choice([0, 1])
             second_place_to_mutate_in = int(random.random() * len(individual.genome_in[0]) - 1)
             second_place_to_mutate_out = int(random.random() * len(individual.genome_out[0]) - 1)
@@ -357,7 +538,7 @@ def crossover_population(cells, population, grid):
     print("[*] Crossover Population")
     childs = []
     count_child = 0
-    while len(childs) != constants.population_limit - len(cells):
+    while len(childs) != constants.population_limit - len(cells) - (constants.population_limit/10):
         weight_in = []
         weight_out = []
         mother = constants.choice(population)
@@ -415,17 +596,22 @@ def next_gen(cells, grid, cells_to_save):
     print("Number Of Cells For Natural Selection: " + str(len(cells)))
     population = sort_population(cells)
 
-    # print("[*] Cut Population")
-    # population = population[:len(population)/2]  # /2
+    #print("[*] Cut Population")
+    #population = population[:len(population)/2]  # /2
 
     # save cell.feeding for display
     best_cells = []
-    for i in range(10):
+    for i in range(constants.population_limit/10):
         best_cells.append(population[i].feeding)
 
-    population = mutate_population(population)
-
     cells = crossover_population(cells, population, grid)
+
+    # Add random cell
+    print("[*] Add Random Cells")
+    while len(cells) != constants.population_limit:
+        cells.append(add_cell(grid, True))
+
+    cells = mutate_population(cells)
 
     return cells, best_cells, cells_to_save
 
@@ -483,23 +669,74 @@ def init_population_with_gen(grid, weight_in, weight_out):
 
 # -------------------------------------------------------------------------
 
+def stop(window, inter, grid, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output, cells):
+    is_stop = True
+    start_button = pygame.draw.rect(window, (55, 50, 50), [constants.pixel_size * constants.width + 40,
+                                                           constants.pixel_size * constants.height / 2 + 400,
+                                                           50, 50])
+    while is_stop:
+        window.fill((10, 10, 10))
+
+        inter.update("stop")
+
+        grid.display(window)
+
+        inter.display_info(window, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output)
+
+        mouse_xy = pygame.mouse.get_pos()
+
+        # Update and Draw cells
+        for cell in cells:
+            if cell.alive:
+                cell.display(window)
+            if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
+                print("[*] Cell Chosen")
+                inter.cell_to_display = cell
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
+                elif event.key == K_SPACE:
+                    is_stop = False
+            elif event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:  # Click gauche ajoute/supprime de la nourriture
+                    if start_button.collidepoint(mouse_xy):
+                        is_stop = False
+                    if mouse_xy[0] < 960:
+                        if grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] != 1:
+                            grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] = 1
+                        else:
+                            grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] = 0
+
+                        for cell in cells:
+                            if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
+                                print("[*] Cell Chosen")
+                                inter.cell_to_display = cell
+
+        pygame.time.wait(0)
+        pygame.display.flip()
+
 
 def main():
     pygame.init()
 
-    window = pygame.display.set_mode((constants.pixel_size * constants.width,
+    window = pygame.display.set_mode((int(constants.pixel_size * constants.width * 1.5),
                                       constants.pixel_size * constants.height))
 
     background = pygame.Surface(window.get_size())
     background = background.convert()
-    background.fill((40, 40, 40))
+    background.fill((10, 10, 10))
 
     pygame.display.set_caption('Creature Simulation')
 
     window.blit(background, (0, 0))
     pygame.display.flip()
 
-    graph = Graph()
+    inter = Interface(window)
+    #graph = Graph()
     grid = Grid()
     grid.random_grid()
 
@@ -517,12 +754,16 @@ def main():
     cells_to_save = []
     average_fitness = 0
     average_output = [0, 0]
-
+    stop_button = pygame.draw.rect(window, (55, 50, 50), [constants.pixel_size * constants.width + 40,
+                                                          constants.pixel_size * constants.height / 2 + 400,
+                                                          50, 50])
     while run:
-        window.fill((40, 40, 40))
-        grid.update(window)
-        time += 1
+        window.fill((10, 10, 10))
 
+        inter.update("start")
+        grid.update(window)
+        grid.display(window)
+        time += 1
         # Next Stage
         if generation == constants.generation_per_stage:
             generation, stage = next_stage(cells, stage)
@@ -531,14 +772,14 @@ def main():
         if len(cells) <= constants.population_limit / 2:
             print("[*] Next Generation")
             cells, best_cells, cells_to_save = next_gen(cells, grid, cells_to_save)
-            graph.update(time, average_fitness, best_cells[0])
+            #graph.update(time, average_fitness, best_cells[0])
             dead_cells = []
             grid.random_grid()
             cells = reset_cells(cells, grid)
             generation += 1
             print("[*] Launch Generation")
 
-        display_info(window, average_fitness, best_cells, generation, len(cells), len(dead_cells), average_output)
+        inter.display_info(window, average_fitness, best_cells, generation, len(cells), len(dead_cells), average_output)
 
         average_fitness = 0
         average_output = [0, 0]
@@ -564,19 +805,32 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 save(cells_to_save, "quit")
-                run = False
+                sys.exit(0)
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     save(cells_to_save, "quit")
-                    run = False
+                    sys.exit(0)
                 elif event.key == K_e:
                     save(cells, "e")
+                elif event.key == K_SPACE:
+                    stop(window, inter,
+                         grid, average_fitness,
+                         best_cells, generation,
+                         len(cells), len(dead_cells),
+                         average_output, cells)
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:  # Click gauche ajoute/supprime de la nourriture
-                    if grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] != 1:
-                        grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] = 1
-                    else:
-                        grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] = 0
+                    if stop_button.collidepoint(mouse_xy):
+                        stop(window, inter,
+                             grid, average_fitness,
+                             best_cells, generation,
+                             len(cells), len(dead_cells),
+                             average_output, cells)
+                    if mouse_xy[0] < 960:
+                        if grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] != 1:
+                            grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] = 1
+                        else:
+                            grid.grid[(mouse_xy[0])/constants.pixel_size][mouse_xy[1]/constants.pixel_size] = 0
 
         pygame.time.wait(0)
         pygame.display.flip()
@@ -586,4 +840,14 @@ if __name__ == "__main__":
     main()
 
 # TODO: refacto
-# TODO: ceux qui en on manger le plus dans un temp donnée
+# TODO: ceux qui en on manger le plus dans un temp donnée ?
+# TODO: backprop: taux d'erreur: ex: if food.x > cell.x: output attendu x -1
+# TODO: Ajout visuel pour neurone: (node: cercle, weight: fleche, bias....)
+        # Dessiné reseau pour comprehension
+        # affichage réseau de neuronnes
+        # Le faire evoluer (avec des couleur)
+        # Afficher les valeurs (array, weights, fitness, input, output)
+        # Integrer le graph dans la fenetre pygame ?
+
+# TODO: fonction d'activation sur chaque neurones ou seulement à la fin ?
+# TODO: Refacto + doc
