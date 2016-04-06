@@ -11,11 +11,11 @@ population_limit = 60
 generation_per_stage = 1000
 
 chance_food = 0.08
-chance_add_random_food = 0.6
+chance_add_random_food = 0.9
 
 mutate_chance = 0.1
 
-sensor_limit = 8
+sensor_limit = 10
 
 choice = lambda x: x[int(random.random() * len(x))]
 

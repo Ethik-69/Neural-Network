@@ -1,12 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 # input: food plus proche
-# output: x, y
+# output: Up, Right, Down, Left
 import sys
 import random
 import pygame
-from pygame.locals import *
 
+from pygame.locals import *
 import matplotlib.pyplot as plt
 
 import constants
@@ -91,6 +91,8 @@ class Cell(object):
         self.sensor_range = 1
 
         self.brain = None
+        self.num_update = 0
+        self.error = 0.0
         self.create_brain(first_gen, weight_in, weight_out)
 
         self.genome_in = self.brain.weights_inputs
@@ -190,20 +192,28 @@ class Cell(object):
 
     def update(self, grid):
         """Met à jour la cellule"""
+        self.num_update += 1
         self.capture(grid.grid)
         self.brain.update(self.sensor)
-        #print(self.sensor, self.brain.array_output)
-        #print(self.sensor, self.brain.array_output)
-        #targets = [0, 0]
-        #if self.sensor[0] < 0:
-        #    targets[0] = 0.4
-        #else:
-        #    targets[0] = 0.6
-        #if self.sensor[1] < 0:
-        #    targets[1] = 0.4
-        #else:
-        #    targets[0] = 0.6
-        #error = self.brain.back_propagation(targets, 0.5, 0.1)
+        targets = [0.4, 0.4, 0.4, 0.4]
+        if self.sensor == [0, 0]:
+            pass
+        else:
+            if self.sensor[0] < 0:
+                targets[3] = 0.6
+                targets[1] = 0.4
+            elif self.sensor[0] > 0:
+                targets[1] = 0.6
+                targets[3] = 0.4
+            if self.sensor[1] < 0:
+                targets[0] = 0.6
+                targets[2] = 0.4
+            elif self.sensor > 0:
+                targets[0] = 0.4
+                targets[2] = 0.6
+        print(self.sensor, targets)
+        self.error = 0.0
+        self.error = self.brain.back_propagate(targets)
         self.move()
         # self.collapse_window(grid)
         self.life.update()
@@ -214,24 +224,26 @@ class Cell(object):
 
     def move(self):
         """Déplace la cellule en fonction des sorties du reseau de neurones"""
-        # print(self.brain.array_output)
+        # print(self.brain.array_output) [up, right, down, left]
         if self.brain.array_output[0] > 0.5:
+            self.y -= 1
+            if self.y < 0:
+                self.y = constants.height - 1
+
+        if self.brain.array_output[1] > 0.5:
             self.x += 1
             if self.x > constants.width - 1:
                 self.x = 0
-        if self.brain.array_output[1] > 0.5:
-            self.x -= 1
-            if self.x < 0:
-                self.x = constants.width - 1
 
         if self.brain.array_output[2] > 0.5:
             self.y += 1
             if self.y > constants.height - 1:
                 self.y = 0
+
         if self.brain.array_output[3] > 0.5:
-            self.y -= 1
-            if self.y < 0:
-                self.y = constants.height - 1
+            self.x -= 1
+            if self.x < 0:
+                self.x = constants.width - 1
 
 
 class Graph(object):
@@ -414,6 +426,30 @@ class Interface(object):
         text = font.render("{}".format(round(self.cell_to_display.brain.array_output[3], 3)), 1, (255, 255, 255))
         text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 320,
                                  centery=77)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Error:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 40,
+                                 centery=90)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(self.cell_to_display.error), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 180,
+                                 centery=90)
+        self.window.blit(text, text_pos)
+
+        # -------------------------------------------------------------------------------------
+
+        text = font.render("Update:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 50,
+                                 centery=110)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(self.cell_to_display.num_update), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 150,
+                                 centery=110)
         self.window.blit(text, text_pos)
 
     def display_neural_net(self):
@@ -927,14 +963,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-# TODO: refacto
-# TODO: backprop: taux d'erreur: ex: if food.x > cell.x: output attendu x -1
-# TODO: Ajout visuel pour neurone: (node: cercle, weight: fleche, bias....)
-        # Dessiné reseau pour comprehension
-        # affichage réseau de neuronnes
-        # Le faire evoluer (avec des couleur)
-        # Afficher les valeurs (array, weights, fitness, input, output)
-        # Integrer le graph dans la fenetre pygame ?
-
-# TODO: fonction d'activation sur chaque neurones ou seulement à la fin ?
 # TODO: Refacto + doc
+# TODO: Changer interface
+# TODO: Algo génétique inutile, a supprimer/modifier

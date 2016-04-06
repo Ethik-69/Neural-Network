@@ -35,6 +35,9 @@ class Network(object):
         if random_weight:
             self.generate_random_weights()
 
+        self.change_input = [[0.0] * self.num_hidden for i in range(self.num_input)]
+        self.change_output = [[0.0] * self.num_output for i in range(self.num_hidden)]
+
     def generate_random_weights(self):
         # weight
         self.weights_inputs = [[0.0] * self.num_hidden for i in range(self.num_input)]
@@ -72,6 +75,43 @@ class Network(object):
                 sum += self.array_hidden[j] * self.weights_outputs[j][k]
             self.array_output[k] = sigmoid(sum)
 
+    def back_propagate(self, targets, N=0.5, M=0.1):
+        if len(targets) != self.num_output:
+            raise ValueError('wrong number of target values')
+
+        # calculate error terms for output
+        output_deltas = [0.0] * self.num_output
+        for k in range(self.num_output):
+            error = targets[k] - self.array_output[k]
+            output_deltas[k] = dsigmoid(self.array_output[k]) * error
+
+        # calculate error terms for hidden
+        hidden_deltas = [0.0] * self.num_hidden
+        for j in range(self.num_hidden):
+            error = 0.0
+            for k in range(self.num_output):
+                error += output_deltas[k] * self.weights_outputs[j][k]
+            hidden_deltas[j] = dsigmoid(self.array_hidden[j]) * error
+
+        # update output weights
+        for j in range(self.num_hidden):
+            for k in range(self.num_output):
+                change = output_deltas[k] * self.array_hidden[j]
+                self.weights_outputs[j][k] = self.weights_outputs[j][k] + N * change + M * self.change_output[j][k]
+                self.change_output[j][k] = change
+
+        # update input weights
+        for i in range(self.num_input):
+            for j in range(self.num_hidden):
+                change = hidden_deltas[j] * self.array_inputs[i]
+                self.weights_inputs[i][j] = self.weights_inputs[i][j] + N * change + M * self.change_input[i][j]
+                self.change_input[i][j] = change
+
+        # calculate error
+        error = 0.0
+        for k in range(len(targets)):
+            error += 0.5 * (targets[k] - self.array_output[k]) ** 2
+        return error
 
 if __name__ == '__main__':
     wi = [[-0.021858447945422327, 0.15219448821928644, 0.06082195473891955, 0.08347288040659018], [0.1909121994812456, 0.16105687191039053, -0.18769546135253634, -0.014766294761266202], [0.1546242895212776, 0.12797293882949273, -0.0036336475923524902, 0.19020235957394455], [-0.12670289813821722, -0.16469072475937652, -0.18832445439002538, 0.0315962797173035], [-1.0, -1.0, -1.0, -1.0]]
