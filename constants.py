@@ -21,4 +21,4 @@ choice = lambda x: x[int(random.random() * len(x))]
 
 n_inputs = 2
 n_hidden = 4
-n_outputs = 2
+n_outputs = 4

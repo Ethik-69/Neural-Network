@@ -192,7 +192,7 @@ class Cell(object):
         """Met à jour la cellule"""
         self.capture(grid.grid)
         self.brain.update(self.sensor)
-        print(self.sensor, self.brain.array_output)
+        #print(self.sensor, self.brain.array_output)
         #print(self.sensor, self.brain.array_output)
         #targets = [0, 0]
         #if self.sensor[0] < 0:
@@ -219,16 +219,16 @@ class Cell(object):
             self.x += 1
             if self.x > constants.width - 1:
                 self.x = 0
-        else:
+        if self.brain.array_output[1] > 0.5:
             self.x -= 1
             if self.x < 0:
                 self.x = constants.width - 1
 
-        if self.brain.array_output[1] > 0.5:
+        if self.brain.array_output[2] > 0.5:
             self.y += 1
             if self.y > constants.height - 1:
                 self.y = 0
-        else:
+        if self.brain.array_output[3] > 0.5:
             self.y -= 1
             if self.y < 0:
                 self.y = constants.height - 1
@@ -276,12 +276,12 @@ class Interface(object):
 
     def update(self, mode):
         pygame.draw.line(self.window, (255, 255, 255),
-                        (constants.pixel_size * constants.width, 0),
-                        (constants.pixel_size * constants.width, constants.pixel_size * constants.height))
+                         (constants.pixel_size * constants.width, 0),
+                         (constants.pixel_size * constants.width, constants.pixel_size * constants.height))
 
         pygame.draw.line(self.window, (255, 255, 255),
-                        (constants.pixel_size * constants.width, constants.pixel_size * constants.height / 2),
-                        (constants.pixel_size * constants.width * 1.5, constants.pixel_size * constants.height / 2))
+                         (constants.pixel_size * constants.width, constants.pixel_size * constants.height / 2),
+                         (constants.pixel_size * constants.width * 1.5, constants.pixel_size * constants.height / 2))
 
         if mode == "start":
             pygame.draw.rect(self.window, (255, 255, 255),
@@ -299,6 +299,7 @@ class Interface(object):
         # Display chosen cell
         if self.cell_to_display is not None:
             self.display_cell_info()
+            self.display_neural_net()
 
     def display_cell_info(self):
         """Affiche les infos de la cellule sélèctionnée à l'écran"""
@@ -375,27 +376,114 @@ class Interface(object):
                                  centery=64)
         self.window.blit(text, text_pos)
 
-        text = font.render("x:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
+        text = font.render("Up:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 120,
                                  centery=64)
         self.window.blit(text, text_pos)
 
-        text = font.render("y:", 1, (255, 255, 255))
+        text = font.render("Right:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 260,
+                                 centery=64)
+        self.window.blit(text, text_pos)
+
+        text = font.render("down:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 120,
+                                 centery=77)
+        self.window.blit(text, text_pos)
+
+        text = font.render("left:", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 260,
+                                 centery=77)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[0], 3)), 1, (255, 255, 255))
         text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
                                  centery=64)
         self.window.blit(text, text_pos)
 
-        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[0], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
-                                 centery=64)
-        self.window.blit(text, text_pos)
-
         text = font.render("{}".format(round(self.cell_to_display.brain.array_output[1], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 320,
                                  centery=64)
         self.window.blit(text, text_pos)
 
-    def display_info(self, window, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output):
+        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[2], 3)), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
+                                 centery=77)
+        self.window.blit(text, text_pos)
+
+        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[3], 3)), 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 320,
+                                 centery=77)
+        self.window.blit(text, text_pos)
+
+    def display_neural_net(self):
+        font = pygame.font.Font('fonts/visitor1.ttf', 15)
+
+        text = font.render("Not Activated", 1, (255, 255, 255))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 390,
+                                 centery=constants.pixel_size * constants.height / 2 - 10)
+        self.window.blit(text, text_pos)
+
+        text = font.render("Activated", 1, (255, 20, 20))
+        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 370,
+                                 centery=constants.pixel_size * constants.height / 2 - 30)
+        self.window.blit(text, text_pos)
+
+        # Inputs ----------------------------------------------------------------
+
+        for i in range(len(self.cell_to_display.brain.array_inputs) - 1):
+            pygame.draw.circle(self.window, (255, 255, 255),
+                               (constants.pixel_size * constants.width + 80, 230 + i * 70),
+                               10)
+
+            # Values
+            text = font.render(str(self.cell_to_display.brain.array_inputs[i]), 1, (255, 255, 255))
+            text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 50,
+                                     centery=230 + i * 70)
+            self.window.blit(text, text_pos)
+
+            # Lines
+            for j in range(len(self.cell_to_display.brain.array_hidden)):
+                pygame.draw.line(self.window, (255, 255, 255),
+                                 (constants.pixel_size * constants.width + 80, 230 + i * 70),
+                                 (constants.pixel_size * constants.width + 230, 160 + j * 70))
+
+        # Hidden ----------------------------------------------------------------
+
+        for i in range(len(self.cell_to_display.brain.array_hidden)):
+            pygame.draw.circle(self.window, (255, 255, 255),
+                               (constants.pixel_size * constants.width + 230, 160 + i * 70),
+                               10)
+            # Values
+            text = font.render(str(round(self.cell_to_display.brain.array_hidden[i], 3)), 1, (255, 255, 255))
+            text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
+                                     centery=130 + i * 70)
+            self.window.blit(text, text_pos)
+
+            # Lines
+            for j in range(len(self.cell_to_display.brain.array_output)):
+                pygame.draw.line(self.window, (255, 255, 255),
+                                 (constants.pixel_size * constants.width + 230, 160 + i * 70),
+                                 (constants.pixel_size * constants.width + 400, 160 + j * 70))
+
+        # Outputs ----------------------------------------------------------------
+
+        for i in range(len(self.cell_to_display.brain.array_output)):
+            if self.cell_to_display.brain.array_output[i] > 0.5:
+                pygame.draw.circle(self.window, (255, 20, 20),
+                                   (constants.pixel_size * constants.width + 400, 160 + i * 70),
+                                   10)
+            else:
+                pygame.draw.circle(self.window, (255, 255, 255),
+                                   (constants.pixel_size * constants.width + 400, 160 + i * 70),
+                                   10)
+
+            text = font.render(str(round(self.cell_to_display.brain.array_output[i], 3)), 1, (255, 255, 255))
+            text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 400,
+                                     centery=130 + i * 70)
+            self.window.blit(text, text_pos)
+
+    def display_info(self, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output):
         """Affiche les infos sur la simulation à l'écran"""
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
@@ -681,7 +769,7 @@ def stop(window, inter, grid, average_fitness, best_cells, generation, len_cells
 
         grid.display(window)
 
-        inter.display_info(window, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output)
+        inter.display_info(average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output)
 
         mouse_xy = pygame.mouse.get_pos()
 
@@ -779,7 +867,7 @@ def main():
             generation += 1
             print("[*] Launch Generation")
 
-        inter.display_info(window, average_fitness, best_cells, generation, len(cells), len(dead_cells), average_output)
+        inter.display_info(average_fitness, best_cells, generation, len(cells), len(dead_cells), average_output)
 
         average_fitness = 0
         average_output = [0, 0]
@@ -840,7 +928,6 @@ if __name__ == "__main__":
     main()
 
 # TODO: refacto
-# TODO: ceux qui en on manger le plus dans un temp donnée ?
 # TODO: backprop: taux d'erreur: ex: if food.x > cell.x: output attendu x -1
 # TODO: Ajout visuel pour neurone: (node: cercle, weight: fleche, bias....)
         # Dessiné reseau pour comprehension
