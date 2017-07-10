@@ -44,7 +44,7 @@ class Interface(object):
             self.display_neural_net()
 
     def display_cell_info(self):
-        """Affiche les infos de la cellule sélèctionnée à l'écran"""
+        """ Display selected cell data """
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
         text = font.render("fitness:", 1, (255, 255, 255))
@@ -265,7 +265,7 @@ class Interface(object):
             self.window.blit(text, text_pos)
 
     def display_info(self, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output, average_error):
-        """Affiche les infos sur la simulation à l'écran"""
+        """ Display simulation data """
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
         text = font.render("Generation: ", 1, (255, 255, 255))

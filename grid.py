@@ -18,7 +18,7 @@ class Grid(object):
                             3: [0, 0, 80]}
 
     def random_grid(self):
-        """Initialise la grille aleatoirement"""
+        """ Initialise the grid with random 'values' """
         for i in xrange(self.height):
             for j in xrange(self.width):
                 if random.random() < self.chance_food:
@@ -27,7 +27,7 @@ class Grid(object):
                     self.grid[i][j] = 0
 
     def add_random_food(self):
-        """Ajoute aleatoirement un case nourriture au hasard"""
+        """ Add some food in the grid at random position """
         for i in range(3):
             if random.random() < self.chance_add_random_food:
                 x = random.randint(0, self.width - 1)
@@ -36,7 +36,7 @@ class Grid(object):
                     self.grid[x][y] = 1
 
     def display(self, window):
-        """Affiche la grille case par case"""
+        """ Display the grid case by case """
         for ligne in xrange(self.height):
             for colone in xrange(self.width):
                 try:
@@ -51,7 +51,7 @@ class Grid(object):
                                          self.pixel_size - 1))
 
     def clean_grid(self):
-        """nettoie la grille pour 'voir' les senseur"""
+        """ Clean the grid if 'view sensors' is active """
         for i in range(constants.width):
             for j in range(constants.height):
                 if self.grid[i][j] == 2:
@@ -60,7 +60,6 @@ class Grid(object):
                     self.grid[i][j] = 0
 
     def update(self, window):
-        pass
         self.add_random_food()
         self.add_random_food()
-        # self.clean_grid()
+        #self.clean_grid()

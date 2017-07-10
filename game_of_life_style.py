@@ -14,9 +14,7 @@ except ImportError, errmsg:
     sys.exit(1)
 
 import constants
-from fauna import Cell
-from flora import Foods
-from flora import Food
+from cell import Cell
 from grid import Grid
 from graph import Graph
 from interface import Interface
@@ -27,8 +25,10 @@ from time_made_home import *
 class Simulation(object):
     def __init__(self):
         pygame.init()
-        self.window = pygame.display.set_mode((int(constants.pixel_size * constants.width * 1.5),
-                                               constants.pixel_size * constants.height))
+
+        width = int(constants.pixel_size * constants.width * 1.5)
+        height = constants.pixel_size * constants.height
+        self.window = pygame.display.set_mode((width, height))
 
         self.background = pygame.Surface(self.window.get_size())
         self.background = self.background.convert()
@@ -64,9 +64,16 @@ class Simulation(object):
         self.average_output = [0, 0]
 
     def add_cell(self, first_gen, weight_in=[], weight_out=[]):
-        return Cell('cell', self.grid, self.all_sprites, first_gen, weight_in, weight_out)
+        """ Create a new cell """
+        return Cell('cell',
+                    self.grid,
+                    self.all_sprites,
+                    first_gen,
+                    weight_in,
+                    weight_out)
 
     def init_population(self):
+        """ Initialise all cells """
         while len(self.cells) != constants.population_limit:
             self.cells.append(self.add_cell(True))
 
@@ -74,12 +81,13 @@ class Simulation(object):
         return (b - a) * random.random() + a
 
     def reset_cells(self):
-        """Remet à "0" toute les cellules"""
+        """ Put back has zero all cells """
         print("[*] Reset self.cells pos and feeding")
         for cell in self.cells:
             cell.init(self.grid)
 
     def stop(self):
+        """ Pygame pause loop """
         is_stop = True
         start_button = pygame.draw.rect(self.window, (50, 50, 50), [constants.pixel_size * constants.width + 40,
                                                                     constants.pixel_size * constants.height / 2 + 400,
@@ -92,7 +100,13 @@ class Simulation(object):
 
             self.grid.display(self.window)
 
-            self.inter.display_info(self.average_fitness, self.best_cells, self.generation, len(self.cells), len(self.dead_cells), self.average_output, self.average_error)
+            self.inter.display_info(self.average_fitness,
+                                    self.best_cells,
+                                    self.generation,
+                                    len(self.cells),
+                                    len(self.dead_cells),
+                                    self.average_output,
+                                    self.average_error)
 
             mouse_xy = pygame.mouse.get_pos()
 
@@ -114,7 +128,7 @@ class Simulation(object):
                         is_stop = False
                 elif event.type == MOUSEBUTTONDOWN:
                     MOUSEDOWN = True
-                    if event.button == 1:  # Click gauche ajoute/supprime de la nourriture
+                    if event.button == 1:  # left click add/del food
                         if start_button.collidepoint(mouse_xy):
                             is_stop = False
                         if mouse_xy[0] < constants.width * constants.pixel_size:
@@ -132,12 +146,14 @@ class Simulation(object):
             pygame.display.flip()
 
     def change_cell_on_click(self, mouse_xy):
+        """ Add or Del food """
         if self.grid.grid[(mouse_xy[0]) / constants.pixel_size][mouse_xy[1] / constants.pixel_size] != 1:
             self.grid.grid[(mouse_xy[0]) / constants.pixel_size][mouse_xy[1] / constants.pixel_size] = 1
         else:
             self.grid.grid[(mouse_xy[0]) / constants.pixel_size][mouse_xy[1] / constants.pixel_size] = 0
 
     def main(self):
+        """ Pygame main loop """
         stop_button = pygame.draw.rect(self.window, (50, 50, 50), [constants.pixel_size * constants.width + 40,
                                                                    constants.pixel_size * constants.height / 2 + 400,
                                                                    50, 50])
@@ -152,7 +168,6 @@ class Simulation(object):
             # Next Generation
             if len(self.cells) <= constants.population_limit / 2:
                 print("[*] Next Generation")
-                self.next_gen()
                 self.dead_cells = []
                 self.grid.random_grid()
                 self.reset_cells()
@@ -203,7 +218,7 @@ class Simulation(object):
                     elif event.key == K_SPACE:
                         self.stop()
                 elif event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:  # Click gauche ajoute/supprime de la nourriture
+                    if event.button == 1:  # left click add/del food
                         if stop_button.collidepoint(mouse_xy):
                             self.stop()
 
@@ -216,4 +231,5 @@ if __name__ == "__main__":
     simu.main()
 
 # TODO: Refacto + doc
+# TODO: add color to food (different color = different values) and give it to the network
 # TODO: changer sensor, un nb de case vertical et horizontale ?

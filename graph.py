@@ -1,12 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+import sys
+
 try:
     import matplotlib.pyplot as plt
 except ImportError, errmsg:
     print('Requires matplotlib')
     print(errmsg)
     sys.exit(1)
-    
+
 
 class Graph(object):
     def __init__(self):

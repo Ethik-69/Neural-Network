@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+import sys
 import random
 import constants
 from network import *
@@ -40,7 +41,7 @@ class Cell(pygame.sprite.Sprite):
         self.genome_out = self.brain.weights_outputs
 
     def init(self, grid):
-        """Initialise les valeurs par default"""
+        """ Put back all data to the default values """
         self.x = 0
         self.y = 0
         self.feeding = 0
@@ -51,13 +52,14 @@ class Cell(pygame.sprite.Sprite):
         self.sensor = [0, 0]
 
     def create_brain(self, first_gen, weight_in, weight_out):
-        """Crée le cerveau (Neural Network)"""
+        """ Create brain (Neural Network)"""
         if first_gen:
             self.brain = Network(constants.n_inputs, constants.n_hidden, constants.n_outputs, True)
         else:
             self.brain = Network(constants.n_inputs, constants.n_hidden, constants.n_outputs, False, weight_in, weight_out)
 
     def random_pos(self, grid):
+        """ Select a random position """
         randm = True
         while randm:
             self.x = random.randint(0, int(constants.width - 1))
@@ -66,7 +68,9 @@ class Cell(pygame.sprite.Sprite):
                 randm = False
 
     def display(self, window):
-        """Ajuste la couleur en fonction de la vie"""
+        """
+        Select the color of the cell with the life left and drawn the cell
+        """
         if len(str(self.life.Time[1])) == 1:
             min = "0" + str(self.life.Time[1])
         else:
@@ -82,6 +86,8 @@ class Cell(pygame.sprite.Sprite):
             life = 255
 
         # drawn cell
+
+        # commented : upscale cells =)
         #if self.feeding > 20:
         #    window.fill([255, life, 255],
         #                (self.x * constants.pixel_size, self.y * constants.pixel_size,
@@ -92,7 +98,7 @@ class Cell(pygame.sprite.Sprite):
                     constants.pixel_size - 1, constants.pixel_size - 1))
 
     def capture(self, grid):
-        """ 'Detecte' la cellule/case contenant de la nourriture la plus proche"""
+        """ Detect the nearest grid cell with food in it """
         self.sensor_range = 1
         self.sensor = [0, 0]
         sensor_on = True
@@ -122,7 +128,7 @@ class Cell(pygame.sprite.Sprite):
                 # self.sensor = [self.sensor[0] - self.x, self.sensor[1] - self.y]
 
     def live_update(self, grid):
-        """ 'Mange' la nourriture si la cellule est sur la 'bonne' case"""
+        """ If the cell is on food, 'eat' it """
         if grid.grid[self.x][self.y] == 1 or grid.grid[self.x][self.y] == 2:
             grid.grid[self.x][self.y] = 0
             self.feeding += 1
@@ -137,7 +143,7 @@ class Cell(pygame.sprite.Sprite):
             self.life.Time[1] -= 59
 
     def update(self, grid):
-        """Met à jour la cellule"""
+        """ Update the cell """
         self.num_update += 1
         self.capture(grid.grid)
         self.brain.update(self.sensor)
@@ -148,19 +154,22 @@ class Cell(pygame.sprite.Sprite):
             pass
         else:
             if self.sensor[0] < 0:
-                targets[3] = 0.6
                 targets[1] = 0.4
+                targets[3] = 0.6
             elif self.sensor[0] > 0:
                 targets[1] = 0.6
                 targets[3] = 0.4
+
             if self.sensor[1] < 0:
                 targets[0] = 0.6
                 targets[2] = 0.4
             elif self.sensor[1] > 0:
                 targets[0] = 0.4
                 targets[2] = 0.6
+
         self.error = 0.0
         self.error = self.brain.back_propagate(targets)
+
         # ----------------------
 
         self.move()
@@ -171,7 +180,7 @@ class Cell(pygame.sprite.Sprite):
         self.live_update(grid)
 
     def move(self):
-        """Déplace la cellule en fonction des sorties du reseau de neurones"""
+        """ Move the cell according to the network outputs """
         # print(self.brain.array_output) [up, right, down, left]
         if self.brain.array_output[0] > 0.5:
             self.y -= 1

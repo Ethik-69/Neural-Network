@@ -8,22 +8,22 @@ class Times(object):
         self.chronos = {}
 
     def __getitem__(self, name, chrono=False):
-        """Renvoi se qui est demander rebour ou chrono"""
+        """ Return what is asked """
         if not chrono:
             return self.rebours[name]
         else:
             return self.chronos[name]
 
     def add_rebour(self, name):
-        """Instancie un rebour et l'ajoute a la liste des rebours 'actif' """
+        """ Create new rebour """
         self.rebours[name] = Rebour(name)
 
     def add_chrono(self, name):
-        """Instancie un chrono et l'ajoute a la liste des chronos 'actif' """
+        """ Create new chrono """
         self.chronos[name] = Chrono(name)
 
     def update(self):
-        """met à jour les chronos et les rebours"""
+        """ Update all chrono and rebour """
         for rebour in self.rebours:
             if self.rebours[rebour].is_started:
                 self.rebours[rebour].update()
@@ -44,19 +44,19 @@ class Rebour(object):
         return self.isFinish
 
     def start(self, init_value):
-        """Lance le rebour"""
+        """ Launch rebour """
         #print('[*] Rebour Start ' + self.name)
         self.Time = init_value
         self.is_started = True
         self.isFinish = False
 
     def stop(self):
-        """Arrete le rebour"""
+        """ End rebour """
         self.is_started = False
         self.isFinish = True
 
     def update(self):
-        """Met à jour le rebour"""
+        """ Update rebour """
         self.Time[2] -= 1
         if self.Time[2] < 0:
             self.Time[2] = 99
@@ -76,22 +76,22 @@ class Chrono(object):
         self.is_started = False
 
     def start(self):
-        """Lance le chrono"""
+        """ Launch timer """
         #print('[*] Chrono Start ' + self.name)
         self.is_started = True
         self.Time = [0, 0, 0]
 
     def reset(self):
-        """Reset le chrono"""
+        """ Reset timer """
         self.Time = [0, 0, 0]
 
     def stop(self):
-        """Arrete le chrono"""
+        """ Stop timer """
         self.is_started = False
         return self.Time
 
     def update(self):
-        """Met à jour le chrono"""
+        """ Update timer """
         self.Time[2] += 1
         if self.Time[2] > 99:
             self.Time[2] = 0
