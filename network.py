@@ -81,23 +81,23 @@ class Network(object):
 
         # calculate error terms for output
         output_deltas = [0.0] * self.num_output
-        for k in range(self.num_output):
-            error = targets[k] - self.array_output[k]
-            output_deltas[k] = dsigmoid(self.array_output[k]) * error
+        for k in range(self.num_output):  # pour chaque neuronnes de sortie
+            error = targets[k] - self.array_output[k]  # cible moins sortie actuel
+            output_deltas[k] = dsigmoid(self.array_output[k]) * error  # sortie x taux d'erreur
 
         # calculate error terms for hidden
         hidden_deltas = [0.0] * self.num_hidden
-        for j in range(self.num_hidden):
+        for j in range(self.num_hidden):  # pour chaque neuronnes de la couche actuel
             error = 0.0
-            for k in range(self.num_output):
-                error += output_deltas[k] * self.weights_outputs[j][k]
+            for k in range(self.num_output):  # pour chaque neuronnes de la couche précédente
+                error += output_deltas[k] * self.weights_outputs[j][k]  # sortie x taux d'erreur de ce neuronnes x weights correspondante
             hidden_deltas[j] = dsigmoid(self.array_hidden[j]) * error
 
         # update output weights
         for j in range(self.num_hidden):
             for k in range(self.num_output):
                 change = output_deltas[k] * self.array_hidden[j]
-                self.weights_outputs[j][k] = self.weights_outputs[j][k] + N * change + M * self.change_output[j][k]
+                self.weights_outputs[j][k] = self.weights_outputs[j][k] + N * change + M * self.change_output[j][k]  # N ? M ?
                 self.change_output[j][k] = change
 
         # update input weights

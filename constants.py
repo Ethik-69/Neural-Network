@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 import random
 
-width = 160
-height = 160
-pixel_size = 6
+width = 200
+height = 200
+pixel_size = 5
 
-population_limit = 60
+population_limit = 100
 
 generation_per_stage = 1000
 
-chance_food = 0.08
+number_of_food = 500
+chance_food = 0.05
 chance_add_random_food = 0.9
 
 mutate_chance = 0.1
