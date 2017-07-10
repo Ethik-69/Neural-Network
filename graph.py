@@ -30,12 +30,11 @@ class Graph(object):
 
         if self.axis_x < x:
             self.axis_x = x
-        else:
-            pass
 
         if self.axis_y < y:
             self.axis_y = y
 
         plt.axis([0, self.axis_x * 1.1, 0, self.axis_y * 1.1])
+        plt.pause(0.0001)
         plt.plot(self.x, self.y, color='black', label="average fitness")
-        plt.draw()
+        #plt.draw()
