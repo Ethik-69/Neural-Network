@@ -268,18 +268,6 @@ class Interface(object):
         """ Display simulation data """
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
-        text = font.render("Generation: ", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 72,
-                                 centery=constants.pixel_size * constants.height / 2 + 15)
-        self.window.blit(text, text_pos)
-
-        text = font.render("{}".format(generation), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 155,
-                                 centery=constants.pixel_size * constants.height / 2 + 15)
-        self.window.blit(text, text_pos)
-
-        # -------------------------------------------------------------------------------------
-
         text = font.render("Population Number:", 1, (255, 255, 255))
         text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 110,
                                  centery=constants.pixel_size * constants.height / 2 + 45)

@@ -39,9 +39,6 @@ class Simulation(object):
         self.window.blit(self.background, (0, 0))
         pygame.display.flip()
 
-        self.all_sprites = pygame.sprite.Group()
-        self.food_sprites = pygame.sprite.Group()
-
         self.inter = Interface(self.window)
         self.graph = Graph()
         self.grid = Grid()
@@ -63,19 +60,17 @@ class Simulation(object):
         self.average_error = 0.0
         self.average_output = [0, 0]
 
-    def add_cell(self, first_gen, weight_in=[], weight_out=[]):
+    def add_cell(self):
         """ Create a new cell """
-        return Cell('cell',
-                    self.grid,
-                    self.all_sprites,
-                    first_gen,
-                    weight_in,
-                    weight_out)
+        return Cell(self.grid,
+                    constants.n_inputs,
+                    constants.n_hidden,
+                    constants.n_outputs)
 
     def init_population(self):
         """ Initialise all cells """
         while len(self.cells) != constants.population_limit:
-            self.cells.append(self.add_cell(True))
+            self.cells.append(self.add_cell())
 
     def rand(self, a, b):
         return (b - a) * random.random() + a
@@ -161,18 +156,9 @@ class Simulation(object):
             self.window.fill((10, 10, 10))
 
             self.inter.update("start")
-            self.grid.update(self.window)
             self.grid.display(self.window)
+            self.grid.update(self.window)
             self.time += 1
-
-            # Next Generation
-            if len(self.cells) <= constants.population_limit / 2:
-                print("[*] Next Generation")
-                self.dead_cells = []
-                self.grid.random_grid()
-                self.reset_cells()
-                self.generation += 1
-                print("[*] Launch Generation")
 
             self.inter.display_info(self.average_fitness,
                                     self.best_cells,
@@ -229,6 +215,9 @@ class Simulation(object):
 if __name__ == "__main__":
     simu = Simulation()
     simu.main()
+
+# En cour : Ajout "bad cells" that eat the white cells
+
 
 # TODO: Refacto + doc
 # TODO: add color to food (different color = different values) and give it to the network

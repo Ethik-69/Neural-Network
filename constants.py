@@ -6,9 +6,7 @@ width = 200
 height = 200
 pixel_size = 5
 
-population_limit = 100
-
-generation_per_stage = 1000
+population_limit = 100  # Start population limit
 
 number_of_food = 500
 chance_food = 0.05
@@ -23,3 +21,6 @@ choice = lambda x: x[int(random.random() * len(x))]
 n_inputs = 2
 n_hidden = 4
 n_outputs = 4
+
+
+reproduction_limit = 100
