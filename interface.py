@@ -43,157 +43,137 @@ class Interface(object):
             self.display_cell_info()
             self.display_neural_net()
 
+    def display_text(self, font, text, color, x, y):
+        text = font.render(text, 1, color)
+        text_pos = text.get_rect(centerx=x, centery=y)
+        self.window.blit(text, text_pos)
+
     def display_cell_info(self):
         """ Display selected cell data """
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
-        text = font.render("fitness:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 50,
-                                 centery=13)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "fitness:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 50, 13)
 
-        text = font.render("{}".format(self.cell_to_display.feeding), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 130,
-                                 centery=13)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(self.cell_to_display.feeding),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 130, 13)
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Pos:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 30,
-                                 centery=30)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Pos:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 30, 30)
 
-        text = font.render("x:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
-                                 centery=30)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "x:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 100, 30)
 
-        text = font.render("y:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
-                                 centery=30)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "y:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 190, 30)
 
-        text = font.render("{}".format(self.cell_to_display.x), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
-                                 centery=30)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(self.cell_to_display.x),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 140, 30)
 
-        text = font.render("{}".format(self.cell_to_display.y), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
-                                 centery=30)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(self.cell_to_display.y),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 230, 30)
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Input:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 43,
-                                 centery=47)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Input:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 43, 47)
 
-        text = font.render("x:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
-                                 centery=47)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "x:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 100, 47)
 
-        text = font.render("y:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
-                                 centery=47)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "y:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 190, 47)
 
-        text = font.render("{}".format(self.cell_to_display.sensor[0], 3), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
-                                 centery=47)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(self.cell_to_display.sensor[0], 3),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 140, 47)
 
-        text = font.render("{}".format(self.cell_to_display.sensor[1], 3), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
-                                 centery=47)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(self.cell_to_display.sensor[1], 3),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 230, 47)
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Output:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 50,
-                                 centery=64)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Output:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 50, 64)
 
-        text = font.render("Up:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 120,
-                                 centery=64)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Up:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 120, 64)
 
-        text = font.render("Right:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 260,
-                                 centery=64)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Right:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 260, 64)
 
-        text = font.render("down:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 120,
-                                 centery=77)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "down:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 120, 77)
 
-        text = font.render("left:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 260,
-                                 centery=77)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "left:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 260, 77)
 
-        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[0], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
-                                 centery=64)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(round(self.cell_to_display.brain.array_output[0], 3)),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 190, 64)
 
-        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[1], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 320,
-                                 centery=64)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(round(self.cell_to_display.brain.array_output[1], 3)),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 320, 64)
 
-        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[2], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 190,
-                                 centery=77)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(round(self.cell_to_display.brain.array_output[2], 3)),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 190, 77)
 
-        text = font.render("{}".format(round(self.cell_to_display.brain.array_output[3], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 320,
-                                 centery=77)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(round(self.cell_to_display.brain.array_output[3], 3)),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 320, 77)
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Error:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 45,
-                                 centery=90)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Error:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 45, 90)
 
-        text = font.render("{}".format(self.cell_to_display.error), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 180,
-                                 centery=90)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(self.cell_to_display.error),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 180, 90)
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Update:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 50,
-                                 centery=110)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Update:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 50, 110)
 
-        text = font.render("{}".format(self.cell_to_display.num_update), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 150,
-                                 centery=110)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(self.cell_to_display.num_update),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 150, 110)
 
     def display_neural_net(self):
         font = pygame.font.Font('fonts/visitor1.ttf', 15)
 
-        text = font.render("Not Activated", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 390,
-                                 centery=constants.pixel_size * constants.height / 2 - 10)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Not Activated",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 390,
+                          constants.pixel_size * constants.height / 2 - 10)
 
-        text = font.render("Activated", 1, (255, 20, 20))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 370,
-                                 centery=constants.pixel_size * constants.height / 2 - 30)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Activated",
+                          (255, 20, 20),
+                          constants.pixel_size * constants.width + 370,
+                          constants.pixel_size * constants.height / 2 - 30)
 
         # Inputs ----------------------------------------------------------------
 
@@ -268,22 +248,32 @@ class Interface(object):
         """ Display simulation data """
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
-        text = font.render("Population Number:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 110,
-                                 centery=constants.pixel_size * constants.height / 2 + 45)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Population Number:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 110,
+                          constants.pixel_size * constants.height / 2 + 45)
 
-        text = font.render("{}".format(len_cells), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
-                                 centery=constants.pixel_size * constants.height / 2 + 45)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(len_cells),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 230,
+                          constants.pixel_size * constants.height / 2 + 45)
 
         # -------------------------------------------------------------------------------------
+
+        self.display_text(font, "{}".format(len_cells),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 230,
+                          constants.pixel_size * constants.height / 2 + 45)
 
         text = font.render("Dead Population Number:", 1, (255, 255, 255))
         text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
                                  centery=constants.pixel_size * constants.height / 2 + 62)
         self.window.blit(text, text_pos)
+
+        self.display_text(font, "{}".format(len_cells),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 230,
+                          constants.pixel_size * constants.height / 2 + 45)
 
         text = font.render("{}".format(len_dead_cells), 1, (255, 255, 255))
         text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 290,
@@ -292,63 +282,63 @@ class Interface(object):
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Average Fitness:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 97,
-                                 centery=constants.pixel_size * constants.height / 2 + 100)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Average Fitness:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 97,
+                          constants.pixel_size * constants.height / 2 + 100)
 
-        text = font.render("{}".format(average_fitness), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
-                                 centery=constants.pixel_size * constants.height / 2 + 100)
-        self.window.blit(text, text_pos)
-
-        # -------------------------------------------------------------------------------------
-
-        text = font.render("Best Cells:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 72,
-                                 centery=constants.pixel_size * constants.height / 2 + 130)
-        self.window.blit(text, text_pos)
-
-        text = font.render("{}".format(best_cells), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 230,
-                                 centery=constants.pixel_size * constants.height / 2 + 150)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(average_fitness),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 230,
+                          constants.pixel_size * constants.height / 2 + 100)
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Average Output:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 97,
-                                 centery=constants.pixel_size * constants.height / 2 + 180)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Best Cells:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 72,
+                          constants.pixel_size * constants.height / 2 + 130)
 
-        text = font.render("x:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 60,
-                                 centery=constants.pixel_size * constants.height / 2 + 200)
-        self.window.blit(text, text_pos)
-
-        text = font.render("y:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 60,
-                                 centery=constants.pixel_size * constants.height / 2 + 220)
-        self.window.blit(text, text_pos)
-
-        text = font.render("{}".format(round(average_output[0], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
-                                 centery=constants.pixel_size * constants.height / 2 + 200)
-        self.window.blit(text, text_pos)
-
-        text = font.render("{}".format(round(average_output[1], 3)), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 100,
-                                 centery=constants.pixel_size * constants.height / 2 + 220)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "{}".format(best_cells),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 230,
+                          constants.pixel_size * constants.height / 2 + 150)
 
         # -------------------------------------------------------------------------------------
 
-        text = font.render("Average Error:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 97,
-                                 centery=constants.pixel_size * constants.height / 2 + 240)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "Average Output:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 97,
+                          constants.pixel_size * constants.height / 2 + 180)
 
-        text = font.render("{}".format(average_error), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 280,
-                                 centery=constants.pixel_size * constants.height / 2 + 240)
-        self.window.blit(text, text_pos)
+        self.display_text(font, "x:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 60,
+                          constants.pixel_size * constants.height / 2 + 200)
+
+        self.display_text(font, "y:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 60,
+                          constants.pixel_size * constants.height / 2 + 220)
+
+        self.display_text(font, "{}".format(round(average_output[0], 3)),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 100,
+                          constants.pixel_size * constants.height / 2 + 200)
+
+        self.display_text(font, "{}".format(round(average_output[1], 3)),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 100,
+                          constants.pixel_size * constants.height / 2 + 220)
+
+        # -------------------------------------------------------------------------------------
+
+        self.display_text(font, "Average Error:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 97,
+                          constants.pixel_size * constants.height / 2 + 240)
+
+        self.display_text(font, "{}".format(average_error),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 280,
+                          constants.pixel_size * constants.height / 2 + 240)
