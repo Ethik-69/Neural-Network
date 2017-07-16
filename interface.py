@@ -352,79 +352,104 @@ class Interface(object):
                                      centery=160 + i * 70)
             self.window.blit(text, text_pos)
 
-    def display_info(self, average_fitness, len_cells, average_output, average_error):
+    def display_info(self, average_fitness, average_evil_fitness, len_cells, len_evil_cells, average_output, average_error, average_evil_error):
+        # add evil number
+        # add evil fitness
+        # add evil error
+
         """ Display simulation data """
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
         self.display_text(font, "Population Number:",
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 110,
-                          constants.pixel_size * constants.height / 2 + 45)
+                          constants.pixel_size * constants.height / 2 + 20)
 
         self.display_text(font, "{}".format(len_cells),
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 230,
-                          constants.pixel_size * constants.height / 2 + 45)
+                          constants.pixel_size * constants.height / 2 + 20)
 
         # -------------------------------------------------------------------------------------
 
-        self.display_text(font, "{}".format(len_cells),
+        self.display_text(font, "Evil population number:",
                           (255, 255, 255),
-                          constants.pixel_size * constants.width + 230,
+                          constants.pixel_size * constants.width + 137,
                           constants.pixel_size * constants.height / 2 + 45)
 
-        self.display_text(font, "{}".format(len_cells),
+        self.display_text(font, "{}".format(len_evil_cells),
                           (255, 255, 255),
-                          constants.pixel_size * constants.width + 230,
+                          constants.pixel_size * constants.width + 280,
                           constants.pixel_size * constants.height / 2 + 45)
 
         # -------------------------------------------------------------------------------------
 
         self.display_text(font, "Average Fitness:",
                           (255, 255, 255),
-                          constants.pixel_size * constants.width + 97,
-                          constants.pixel_size * constants.height / 2 + 100)
+                          constants.pixel_size * constants.width + 99,
+                          constants.pixel_size * constants.height / 2 + 80)
 
         self.display_text(font, "{}".format(average_fitness),
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 230,
-                          constants.pixel_size * constants.height / 2 + 100)
+                          constants.pixel_size * constants.height / 2 + 80)
+        # -------------------------------------------------------------------------------------
+
+        self.display_text(font, "Average Evil Fitness:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 125,
+                          constants.pixel_size * constants.height / 2 + 105)
+
+        self.display_text(font, "{}".format(average_evil_fitness),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 260,
+                          constants.pixel_size * constants.height / 2 + 105)
+
+        # -------------------------------------------------------------------------------------
+
+        self.display_text(font, "Average Error:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 91,
+                          constants.pixel_size * constants.height / 2 + 140)
+
+        self.display_text(font, "{}".format(average_error),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 280,
+                          constants.pixel_size * constants.height / 2 + 140)
+
+        self.display_text(font, "Average Evil Error:",
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 117,
+                          constants.pixel_size * constants.height / 2 + 160)
+
+        self.display_text(font, "{}".format(average_evil_error),
+                          (255, 255, 255),
+                          constants.pixel_size * constants.width + 330,
+                          constants.pixel_size * constants.height / 2 + 160)
 
         # -------------------------------------------------------------------------------------
 
         self.display_text(font, "Average Output:",
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 97,
-                          constants.pixel_size * constants.height / 2 + 180)
+                          constants.pixel_size * constants.height / 2 + 200)
 
         self.display_text(font, "x:",
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 60,
-                          constants.pixel_size * constants.height / 2 + 200)
+                          constants.pixel_size * constants.height / 2 + 220)
 
         self.display_text(font, "y:",
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 60,
-                          constants.pixel_size * constants.height / 2 + 220)
+                          constants.pixel_size * constants.height / 2 + 240)
 
         self.display_text(font, "{}".format(round(average_output[0], 3)),
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 100,
-                          constants.pixel_size * constants.height / 2 + 200)
+                          constants.pixel_size * constants.height / 2 + 220)
 
         self.display_text(font, "{}".format(round(average_output[1], 3)),
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 100,
-                          constants.pixel_size * constants.height / 2 + 220)
-
-        # -------------------------------------------------------------------------------------
-
-        self.display_text(font, "Average Error:",
-                          (255, 255, 255),
-                          constants.pixel_size * constants.width + 97,
-                          constants.pixel_size * constants.height / 2 + 240)
-
-        self.display_text(font, "{}".format(average_error),
-                          (255, 255, 255),
-                          constants.pixel_size * constants.width + 280,
                           constants.pixel_size * constants.height / 2 + 240)

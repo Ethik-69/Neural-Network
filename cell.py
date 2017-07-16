@@ -207,7 +207,6 @@ class EvilCell(ParentCell):
                 sensor_on = False
                 # "traduit" la position de la nourriture pour le reseau de neurones
                 self.sensor = [(float(self.sensor[0] - self.x))/10, (float(self.sensor[1] - self.y))/10]
-                # self.sensor = [self.sensor[0] - self.x, self.sensor[1] - self.y]
 
     def eat(self, grid):
         """ If the cell is on another cell, 'eat' it """

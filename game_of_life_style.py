@@ -53,7 +53,9 @@ class Simulation(object):
         self.is_stop = False
         self.population = None
         self.average_fitness = 0
+        self.average_evil_fitness = 0
         self.average_error = 0.0
+        self.average_evil_error = 0.0
         self.average_output = [0, 0]
 
         self.play_pause_button = None
@@ -174,6 +176,8 @@ class Simulation(object):
         # Update and Draw all bad cells  -----------------------------------
         for cell in self.evil_cells:
             if cell.alive:
+                self.average_evil_error += cell.error
+                self.average_evil_fitness += cell.feeding
                 cell.update(self.grid)
                 if self.view_sensors and not cell.view_sensors:
                     cell.view_sensors = True
@@ -224,14 +228,19 @@ class Simulation(object):
 
     def reset_averages(self):
         self.average_fitness = 0
+        self.average_evil_fitness = 0
         self.average_output = [0, 0]
         self.average_error = 0.0
+        self.average_evil_error = 0.0
 
     def calc_averages(self):
         self.average_output[0] /= len(self.cells)
         self.average_output[1] /= len(self.cells)
         self.average_fitness /= len(self.cells)
         self.average_error /= len(self.cells)
+        if len(self.evil_cells) != 0:
+            self.average_evil_fitness /= len(self.evil_cells)
+            self.average_evil_error /= len(self.evil_cells)
 
     def main(self):
         """ Pygame main loop """
@@ -250,9 +259,12 @@ class Simulation(object):
             self.grid.clean_grid()
 
             self.interface.display_info(self.average_fitness,
-                                    len(self.cells),
-                                    self.average_output,
-                                    self.average_error)
+                                        self.average_evil_fitness,
+                                        len(self.cells),
+                                        len(self.evil_cells),
+                                        self.average_output,
+                                        self.average_error,
+                                        self.average_evil_error)
 
             self.reset_averages()
             self.update_all_cells_main()
