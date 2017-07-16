@@ -38,7 +38,7 @@ class Simulation(object):
         self.window.blit(self.background, (0, 0))
         pygame.display.flip()
 
-        self.inter = Interface(self.window)
+        self.interface = Interface(self.window)
         self.graph = Graph()
         self.grid = Grid()
         self.grid.random_grid()
@@ -55,6 +55,10 @@ class Simulation(object):
         self.average_fitness = 0
         self.average_error = 0.0
         self.average_output = [0, 0]
+
+        self.play_pause_button = None
+        self.sensors_button = None
+        self.bad_cell_button = None
 
     def add_cell(self):
         """ Create a new cell """
@@ -89,51 +93,24 @@ class Simulation(object):
     def stop(self):
         """ Pygame pause loop """
         is_stop = True
-        start_button = pygame.draw.rect(self.window, (50, 50, 50),
-                                        [constants.pixel_size * constants.width + 40,
-                                        constants.pixel_size * constants.height / 2 + 400,
-                                        50, 50])
-
-        sensors_button = pygame.draw.rect(self.window, (255, 255, 255),
-                                          [constants.pixel_size * constants.width + 140,
-                                          constants.pixel_size * constants.height / 2 + 400,
-                                          50, 50])
-
-        bad_cell_button = pygame.draw.rect(self.window, (255, 255, 255),
-                                           [constants.pixel_size * constants.width + 240,
-                                           constants.pixel_size * constants.height / 2 + 400,
-                                           50, 50])
+        self.create_buttons()
 
         MOUSEDOWN = False
         while is_stop:
             self.window.fill((10, 10, 10))
 
-            self.inter.update("stop", self.view_sensors)
+            self.interface.update("stop", self.view_sensors)
 
             self.grid.display(self.window)
 
-            self.inter.display_info(self.average_fitness,
+            self.interface.display_info(self.average_fitness,
                                     len(self.cells),
                                     self.average_output,
                                     self.average_error)
 
             mouse_xy = pygame.mouse.get_pos()
 
-            # Update and Draw cells
-            for cell in self.cells:
-                if cell.alive:
-                    cell.display(self.window)
-                if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
-                    print("[*] Cell Chosen")
-                    self.inter.cell_to_display = cell
-
-            # Update and Draw evil cells
-            for cell in self.evil_cells:
-                if cell.alive:
-                    cell.display(self.window)
-                if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
-                    print("[*] Evil Cell Chosen")
-                    self.inter.cell_to_display = cell
+            self.update_all_cells_stop(mouse_xy)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -146,9 +123,11 @@ class Simulation(object):
                 elif event.type == MOUSEBUTTONDOWN:
                     MOUSEDOWN = True
                     if event.button == 1:  # left click add/del food
-                        if start_button.collidepoint(mouse_xy):
+                        if self.play_pause_button.collidepoint(mouse_xy):
                             is_stop = False
-                        elif sensors_button.collidepoint(mouse_xy):
+                        elif self.bad_cell_button.collidepoint(mouse_xy):
+                            self.evil_cells.append(self.add_evil_cell())
+                        elif self.sensors_button.collidepoint(mouse_xy):
                             if self.view_sensors:
                                 self.view_sensors = False
                             else:
@@ -157,7 +136,7 @@ class Simulation(object):
                             for cell in self.cells:
                                 if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
                                     print("[*] Cell Chosen")
-                                    self.inter.cell_to_display = cell
+                                    self.interface.cell_to_display = cell
                 elif event.type == MOUSEBUTTONUP:
                     MOUSEDOWN = False
 
@@ -174,7 +153,7 @@ class Simulation(object):
         else:
             self.grid.grid[(mouse_xy[0]) / constants.pixel_size][mouse_xy[1] / constants.pixel_size] = 0
 
-    def update_all_cells(self):
+    def update_all_cells_main(self):
         # Update and Draw all cells  -----------------------------------
         for cell in self.cells:
             if cell.alive:
@@ -205,27 +184,58 @@ class Simulation(object):
             else:
                 self.cells.remove(cell)
 
+    def update_all_cells_stop(self, mouse_xy):
+        # Update and Draw cells
+        for cell in self.cells:
+            if cell.alive:
+                cell.display(self.window)
+            if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
+                print("[*] Cell Chosen")
+                self.interface.cell_to_display = cell
+
+        # Update and Draw evil cells
+        for cell in self.evil_cells:
+            if cell.alive:
+                cell.display(self.window)
+            if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
+                print("[*] Evil Cell Chosen")
+                self.interface.cell_to_display = cell
+
     def end(self):
         print("[*] Evil cells Win !")
         print("[*] Evil population: %s" % len(self.evil_cells))
         print("[*] Average Error: %s" % self.average_error)
         print("[*] Average Fitness: %s" % self.average_fitness)
 
-    def main(self):
-        """ Pygame main loop """
-        stop_button = pygame.draw.rect(self.window, (50, 50, 50), [constants.pixel_size * constants.width + 40,
+    def create_buttons(self):
+        self.play_pause_button = pygame.draw.rect(self.window, (50, 50, 50), [constants.pixel_size * constants.width + 40,
                                                                    constants.pixel_size * constants.height / 2 + 400,
                                                                    50, 50])
 
-        sensors_button = pygame.draw.rect(self.window, (255, 255, 255),
+        self.sensors_button = pygame.draw.rect(self.window, (255, 255, 255),
                                          [constants.pixel_size * constants.width + 140,
                                           constants.pixel_size * constants.height / 2 + 400,
                                          50, 50])
 
-        bad_cell_button = pygame.draw.rect(self.window, (255, 255, 255),
+        self.bad_cell_button = pygame.draw.rect(self.window, (255, 255, 255),
                                            [constants.pixel_size * constants.width + 240,
                                            constants.pixel_size * constants.height / 2 + 400,
                                            50, 50])
+
+    def reset_averages(self):
+        self.average_fitness = 0
+        self.average_output = [0, 0]
+        self.average_error = 0.0
+
+    def calc_averages(self):
+        self.average_output[0] /= len(self.cells)
+        self.average_output[1] /= len(self.cells)
+        self.average_fitness /= len(self.cells)
+        self.average_error /= len(self.cells)
+
+    def main(self):
+        """ Pygame main loop """
+        self.create_buttons()
 
         while self.run:
 
@@ -234,27 +244,19 @@ class Simulation(object):
 
             self.window.fill((10, 10, 10))
 
-            self.inter.update("start", self.view_sensors)
+            self.interface.update("start", self.view_sensors)
             self.grid.display(self.window)
             self.grid.update(self.window)
             self.grid.clean_grid()
 
-            self.inter.display_info(self.average_fitness,
+            self.interface.display_info(self.average_fitness,
                                     len(self.cells),
                                     self.average_output,
                                     self.average_error)
 
-            self.average_fitness = 0
-            self.average_output = [0, 0]
-            self.average_error = 0.0
-
-            self.update_all_cells()
-
-            self.average_output[0] /= len(self.cells)
-            self.average_output[1] /= len(self.cells)
-            self.average_fitness /= len(self.cells)
-            self.average_error /= len(self.cells)
-
+            self.reset_averages()
+            self.update_all_cells_main()
+            self.calc_averages()
 
             self.time += 1
 
@@ -273,11 +275,11 @@ class Simulation(object):
                         self.stop()
                 elif event.type == MOUSEBUTTONDOWN:
                     if event.button == 1:  # left click add/del food
-                        if stop_button.collidepoint(mouse_xy):
+                        if self.play_pause_button.collidepoint(mouse_xy):
                             self.stop()
-                        elif bad_cell_button.collidepoint(mouse_xy):
+                        elif self.bad_cell_button.collidepoint(mouse_xy):
                             self.evil_cells.append(self.add_evil_cell())
-                        elif sensors_button.collidepoint(mouse_xy):
+                        elif self.sensors_button.collidepoint(mouse_xy):
                             if self.view_sensors:
                                 self.view_sensors = False
                             else:

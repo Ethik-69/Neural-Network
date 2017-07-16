@@ -33,6 +33,17 @@ class Interface(object):
                          (constants.pixel_size * constants.width, constants.pixel_size * constants.height / 2),
                          (constants.pixel_size * constants.width * 1.5, constants.pixel_size * constants.height / 2))
 
+
+        self.draw_play_pause_button(mode)
+        self.draw_sensors_icone(view_sensors)
+        self.draw_evil_button()
+
+        # Display chosen cell
+        if self.cell_to_display is not None:
+            self.display_cell_info()
+            self.display_neural_net()
+
+    def draw_play_pause_button(self, mode):
         if mode == "start":
             pygame.draw.rect(self.window, (255, 255, 255),
                              [constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 408,
@@ -45,14 +56,6 @@ class Interface(object):
                                [(constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 408),
                                 (constants.pixel_size * constants.width + 79, constants.pixel_size * constants.height / 2 + 422),
                                 (constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 438)])
-
-        self.draw_sensors_icone(view_sensors)
-        self.draw_evil_button()
-
-        # Display chosen cell
-        if self.cell_to_display is not None:
-            self.display_cell_info()
-            self.display_neural_net()
 
     def draw_sensors_icone(self, view_sensors):
         self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
@@ -145,7 +148,6 @@ class Interface(object):
         pygame.draw.line(self.window, (255, 0, 0),
                         (constants.pixel_size * constants.width + 290, constants.pixel_size * constants.height / 2 + 400),
                         (constants.pixel_size * constants.width + 290, constants.pixel_size * constants.height / 2 + 450), 3)
-
 
     def display_text(self, font, text, color, x, y):
         text = font.render(text, 1, color)
