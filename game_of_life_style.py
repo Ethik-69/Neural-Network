@@ -19,8 +19,6 @@ from grid import Grid
 from graph import Graph
 from interface import Interface
 
-from time_made_home import *
-
 
 class Simulation(object):
     def __init__(self):
@@ -50,6 +48,7 @@ class Simulation(object):
         self.time = 0
         self.stage = 0
         self.run = True
+        self.view_sensors = False
         self.is_stop = False
         self.population = None
         self.generation = 0
@@ -84,14 +83,21 @@ class Simulation(object):
     def stop(self):
         """ Pygame pause loop """
         is_stop = True
-        start_button = pygame.draw.rect(self.window, (50, 50, 50), [constants.pixel_size * constants.width + 40,
-                                                                    constants.pixel_size * constants.height / 2 + 400,
-                                                                    50, 50])
+        start_button = pygame.draw.rect(self.window, (50, 50, 50),
+                                        [constants.pixel_size * constants.width + 40,
+                                        constants.pixel_size * constants.height / 2 + 400,
+                                        50, 50])
+
+        sensors_button = pygame.draw.rect(self.window, (255, 255, 255),
+                                          [constants.pixel_size * constants.width + 140,
+                                          constants.pixel_size * constants.height / 2 + 400,
+                                          50, 50])
+
         MOUSEDOWN = False
         while is_stop:
             self.window.fill((10, 10, 10))
 
-            self.inter.update("stop")
+            self.inter.update("stop", self.view_sensors)
 
             self.grid.display(self.window)
 
@@ -126,6 +132,11 @@ class Simulation(object):
                     if event.button == 1:  # left click add/del food
                         if start_button.collidepoint(mouse_xy):
                             is_stop = False
+                        if sensors_button.collidepoint(mouse_xy):
+                            if self.view_sensors:
+                                self.view_sensors = False
+                            else:
+                                self.view_sensors = True
                         if mouse_xy[0] < constants.width * constants.pixel_size:
                             for cell in self.cells:
                                 if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
@@ -152,12 +163,20 @@ class Simulation(object):
         stop_button = pygame.draw.rect(self.window, (50, 50, 50), [constants.pixel_size * constants.width + 40,
                                                                    constants.pixel_size * constants.height / 2 + 400,
                                                                    50, 50])
+
+        sensors_button = pygame.draw.rect(self.window, (255, 255, 255),
+                                         [constants.pixel_size * constants.width + 140,
+                                          constants.pixel_size * constants.height / 2 + 400,
+                                         50, 50])
+
         while self.run:
             self.window.fill((10, 10, 10))
 
-            self.inter.update("start")
+            self.inter.update("start", self.view_sensors)
             self.grid.display(self.window)
             self.grid.update(self.window)
+            self.grid.clean_grid()
+
             self.time += 1
 
             self.inter.display_info(self.average_fitness,
@@ -180,6 +199,11 @@ class Simulation(object):
                     cell.update(self.grid)
                     self.average_output[0] += cell.brain.array_output[0]
                     self.average_output[1] += cell.brain.array_output[1]
+                    if self.view_sensors:
+                        cell.view_sensors = True
+                    else:
+                        cell.view_sensors = False
+
                     cell.display(self.window)
                 else:
                     self.dead_cells.append(cell)
@@ -207,6 +231,11 @@ class Simulation(object):
                     if event.button == 1:  # left click add/del food
                         if stop_button.collidepoint(mouse_xy):
                             self.stop()
+                        if sensors_button.collidepoint(mouse_xy):
+                            if self.view_sensors:
+                                self.view_sensors = False
+                            else:
+                                self.view_sensors = True
 
             pygame.time.wait(0)
             pygame.display.flip()

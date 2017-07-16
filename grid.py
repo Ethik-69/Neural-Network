@@ -62,4 +62,3 @@ class Grid(object):
     def update(self, window):
         self.add_random_food()
         self.add_random_food()
-        self.clean_grid()

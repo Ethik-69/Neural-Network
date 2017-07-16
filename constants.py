@@ -15,6 +15,7 @@ chance_add_random_food = 0.9
 mutate_chance = 0.1
 
 sensor_limit = 10
+bad_sensor_limit = 20
 
 choice = lambda x: x[int(random.random() * len(x))]
 

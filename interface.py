@@ -4,6 +4,7 @@ import constants
 
 try:
     import pygame
+    from pygame import gfxdraw
     from pygame.locals import *
 except ImportError, errmsg:
     print('Requires PyGame')
@@ -16,7 +17,14 @@ class Interface(object):
         self.window = window
         self.cell_to_display = None
 
-    def update(self, mode):
+    def draw_arc(self, surface, center, radius, start_angle, stop_angle, color):
+        x,y = center
+        start_angle = int(start_angle%360)
+        stop_angle = int(stop_angle%360)
+        gfxdraw.arc(surface, x, y, radius, start_angle, stop_angle, color)
+
+
+    def update(self, mode, view_sensors):
         pygame.draw.line(self.window, (255, 255, 255),
                          (constants.pixel_size * constants.width, 0),
                          (constants.pixel_size * constants.width, constants.pixel_size * constants.height))
@@ -38,10 +46,70 @@ class Interface(object):
                                 (constants.pixel_size * constants.width + 79, constants.pixel_size * constants.height / 2 + 422),
                                 (constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 438)])
 
+        self.draw_sensors_icone(view_sensors)
+
         # Display chosen cell
         if self.cell_to_display is not None:
             self.display_cell_info()
             self.display_neural_net()
+
+    def draw_sensors_icone(self, view_sensors):
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     35, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     34, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     33, 225, 315, (255, 255, 255))
+
+
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     28, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     27, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     26, 225, 315, (255, 255, 255))
+
+
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     21, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     20, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     19, 225, 315, (255, 255, 255))
+
+
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     14, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     13, 225, 315, (255, 255, 255))
+        self.draw_arc(self.window, (constants.pixel_size * constants.width + 165,
+                                    constants.pixel_size * constants.height / 2 + 440),
+                                     12, 225, 315, (255, 255, 255))
+
+        pygame.draw.circle(self.window, (255, 255, 255),
+                           (constants.pixel_size * constants.width + 166,
+                            constants.pixel_size * constants.height / 2 + 440),
+                           6, 0)
+
+        if view_sensors:
+            pygame.draw.line(self.window, (255, 0, 0),
+                            (constants.pixel_size * constants.width + 140, constants.pixel_size * constants.height / 2 + 400),
+                            (constants.pixel_size * constants.width + 190, constants.pixel_size * constants.height / 2 + 450), 3)
+
+            pygame.draw.line(self.window, (255, 0, 0),
+                            (constants.pixel_size * constants.width + 190, constants.pixel_size * constants.height / 2 + 400),
+                            (constants.pixel_size * constants.width + 140, constants.pixel_size * constants.height / 2 + 450), 3)
 
     def display_text(self, font, text, color, x, y):
         text = font.render(text, 1, color)
@@ -167,8 +235,8 @@ class Interface(object):
 
         self.display_text(font, "Not Activated",
                           (255, 255, 255),
-                          constants.pixel_size * constants.width + 390,
-                          constants.pixel_size * constants.height / 2 - 10)
+                          constants.pixel_size * constants.width + 388,
+                          constants.pixel_size * constants.height / 2 - 13)
 
         self.display_text(font, "Activated",
                           (255, 20, 20),
@@ -181,11 +249,13 @@ class Interface(object):
 
         for i in range(len(self.cell_to_display.brain.array_inputs) - 1):
             pygame.draw.circle(self.window, (255, 255, 255),
-                               (constants.pixel_size * constants.width + 80, 230 + i * 70),
-                               10)
+                               (constants.pixel_size * constants.width + 80,
+                               230 + i * 70), 10)
 
             # Values
-            text = font.render(str(self.cell_to_display.brain.array_inputs[i]), 1, (255, 255, 255))
+            text = font.render(str(self.cell_to_display.brain.array_inputs[i]),
+                               1,
+                               (255, 255, 255))
             text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 80,
                                      centery=200 + i * 70)
             self.window.blit(text, text_pos)

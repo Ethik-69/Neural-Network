@@ -4,7 +4,6 @@ import sys
 import random
 import constants
 from network import *
-from time_made_home import *
 
 try:
     import pygame
@@ -25,6 +24,7 @@ class ParentCell(object):
 
         self.sensor = [0, 0]
         self.sensor_range = 1
+        self.view_sensors = False
 
         self.brain = None
         self.num_update = 0
@@ -100,30 +100,9 @@ class ParentCell(object):
                 self.x = constants.width - 1
 
 
-
-
 class Cell(ParentCell):
     def __init__(self, grid, n_inputs, n_hidden, n_outputs):
         ParentCell.__init__(self, grid, n_inputs, n_hidden, n_outputs)
-        self.x = 0
-        self.y = 0
-        self.random_pos(grid)
-        self.alive = True
-        self.feeding = 0  # fitness
-
-        self.sensor = [0, 0]
-        self.sensor_range = 1
-
-        self.brain = None
-        self.num_update = 0
-        self.error = 0.0
-        self.n_inputs = n_inputs
-        self.n_hidden = n_hidden
-        self.n_outputs = n_outputs
-        self.create_brain()
-
-        self.genome_in = self.brain.weights_inputs
-        self.genome_out = self.brain.weights_outputs
 
     def capture(self, grid):
         """ Detect the nearest grid cell with food in it """
@@ -142,8 +121,7 @@ class Cell(ParentCell):
                     try:
                         if grid[x][y] == 1:
                             self.sensor = [x, y]
-                        else:
-                            # pass
+                        elif self.view_sensors:
                             grid[x][y] = 3  # Pour "voir" les senseurs
                     except:
                         pass
@@ -195,30 +173,9 @@ class Cell(ParentCell):
         self.eat(grid)
 
 
-
-
 class BadCell(ParentCell):
     def __init__(self, grid, n_inputs, n_hidden, n_outputs, first_gen=False):
         ParentCell.__init__(self, grid, n_inputs, n_hidden, n_outputs)
-        self.x = 0
-        self.y = 0
-        self.random_pos(grid)
-        self.alive = True
-        self.feeding = 0  # fitness
-
-        self.sensor = [0, 0]
-        self.sensor_range = 1
-
-        self.brain = None
-        self.num_update = 0
-        self.error = 0.0
-        self.n_inputs = n_inputs
-        self.n_hidden = n_hidden
-        self.n_outputs = n_outputs
-        self.create_brain()
-
-        self.genome_in = self.brain.weights_inputs
-        self.genome_out = self.brain.weights_outputs
 
     def capture(self, grid):
         """ Detect the nearest grid cell with food in it """
@@ -235,14 +192,14 @@ class BadCell(ParentCell):
             for x in range(min_x_range, self.x + self.sensor_range):
                 for y in range(min_y_range, self.y + self.sensor_range):
                     try:
-                        if grid[x][y] == 1:
+                        if isinstance(grid[x][y], Cell):
                             self.sensor = [x, y]
                         else:
                             # pass
                             grid[x][y] = 3  # Pour "voir" les senseurs
                     except:
                         pass
-            if self.sensor == [0, 0] and self.sensor_range < constants.sensor_limit:
+            if self.sensor == [0, 0] and self.sensor_range < constants.bad_sensor_limit:
                 self.sensor_range += 1
             else:
                 sensor_on = False
@@ -251,9 +208,9 @@ class BadCell(ParentCell):
                 # self.sensor = [self.sensor[0] - self.x, self.sensor[1] - self.y]
 
     def eat(self, grid):
-        """ If the cell is on food, 'eat' it """
-        if grid.grid[self.x][self.y] == 1 or grid.grid[self.x][self.y] == 2:
-            grid.grid[self.x][self.y] = 0
+        """ If the cell is on another cell, 'eat' it """
+        if isinstance(grid.grid[self.x][self.y], Cell):
+            grid.grid[self.x][self.y].alive = False
             self.feeding += 1
 
     def update(self, grid):
