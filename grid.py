@@ -12,10 +12,11 @@ class Grid(object):
         self.chance_food = constants.chance_food
         self.chance_add_random_food = constants.chance_add_random_food
         self.grid = [[0] * self.width for i in xrange(self.height)]
-        self.color_swich = {0: [0, 0, 0],
-                            1: [0, 100, 100],
+        self.color_swich = {0: [0, 0, 0],  # Empty
+                            1: [0, 100, 100],  # Foods
                             2: [250, 10, 10],
-                            3: [0, 0, 80]}
+                            3: [0, 0, 80],  # Cells Sensors
+                            4: [0, 255, 0]}  # Evil Cells Sensors
 
     def random_grid(self):
         """ Initialise the grid with random 'values' """
@@ -57,6 +58,8 @@ class Grid(object):
                 if self.grid[i][j] == 2:
                     self.grid[i][j] = 1
                 elif self.grid[i][j] == 3:
+                    self.grid[i][j] = 0
+                elif self.grid[i][j] == 4:
                     self.grid[i][j] = 0
 
     def update(self, window):

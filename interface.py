@@ -47,6 +47,7 @@ class Interface(object):
                                 (constants.pixel_size * constants.width + 52, constants.pixel_size * constants.height / 2 + 438)])
 
         self.draw_sensors_icone(view_sensors)
+        self.draw_evil_button()
 
         # Display chosen cell
         if self.cell_to_display is not None:
@@ -110,6 +111,41 @@ class Interface(object):
             pygame.draw.line(self.window, (255, 0, 0),
                             (constants.pixel_size * constants.width + 190, constants.pixel_size * constants.height / 2 + 400),
                             (constants.pixel_size * constants.width + 140, constants.pixel_size * constants.height / 2 + 450), 3)
+
+    def draw_evil_button(self):
+        font = pygame.font.Font('fonts/visitor1.ttf', 20)
+
+        self.display_text(font, "Add",
+                          (255, 0, 0),
+                          constants.pixel_size * constants.width + 268,
+                          constants.pixel_size * constants.height / 2 + 416)
+
+        self.display_text(font, "Evil",
+                          (255, 0, 0),
+                          constants.pixel_size * constants.width + 268,
+                          constants.pixel_size * constants.height / 2 + 435)
+
+
+
+        pygame.draw.line(self.window, (255, 0, 0),
+                        (constants.pixel_size * constants.width + 240, constants.pixel_size * constants.height / 2 + 400),
+                        (constants.pixel_size * constants.width + 240, constants.pixel_size * constants.height / 2 + 450), 3)
+
+
+        pygame.draw.line(self.window, (255, 0, 0),
+                        (constants.pixel_size * constants.width + 240, constants.pixel_size * constants.height / 2 + 400),
+                        (constants.pixel_size * constants.width + 290, constants.pixel_size * constants.height / 2 + 400), 3)
+
+
+        pygame.draw.line(self.window, (255, 0, 0),
+                        (constants.pixel_size * constants.width + 240, constants.pixel_size * constants.height / 2 + 450),
+                        (constants.pixel_size * constants.width + 290, constants.pixel_size * constants.height / 2 + 450), 3)
+
+
+        pygame.draw.line(self.window, (255, 0, 0),
+                        (constants.pixel_size * constants.width + 290, constants.pixel_size * constants.height / 2 + 400),
+                        (constants.pixel_size * constants.width + 290, constants.pixel_size * constants.height / 2 + 450), 3)
+
 
     def display_text(self, font, text, color, x, y):
         text = font.render(text, 1, color)
@@ -314,7 +350,7 @@ class Interface(object):
                                      centery=160 + i * 70)
             self.window.blit(text, text_pos)
 
-    def display_info(self, average_fitness, best_cells, generation, len_cells, len_dead_cells, average_output, average_error):
+    def display_info(self, average_fitness, len_cells, average_output, average_error):
         """ Display simulation data """
         font = pygame.font.Font('fonts/visitor1.ttf', 20)
 
@@ -335,20 +371,10 @@ class Interface(object):
                           constants.pixel_size * constants.width + 230,
                           constants.pixel_size * constants.height / 2 + 45)
 
-        text = font.render("Dead Population Number:", 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 140,
-                                 centery=constants.pixel_size * constants.height / 2 + 62)
-        self.window.blit(text, text_pos)
-
         self.display_text(font, "{}".format(len_cells),
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 230,
                           constants.pixel_size * constants.height / 2 + 45)
-
-        text = font.render("{}".format(len_dead_cells), 1, (255, 255, 255))
-        text_pos = text.get_rect(centerx=constants.pixel_size * constants.width + 290,
-                                 centery=constants.pixel_size * constants.height / 2 + 62)
-        self.window.blit(text, text_pos)
 
         # -------------------------------------------------------------------------------------
 
@@ -361,18 +387,6 @@ class Interface(object):
                           (255, 255, 255),
                           constants.pixel_size * constants.width + 230,
                           constants.pixel_size * constants.height / 2 + 100)
-
-        # -------------------------------------------------------------------------------------
-
-        self.display_text(font, "Best Cells:",
-                          (255, 255, 255),
-                          constants.pixel_size * constants.width + 72,
-                          constants.pixel_size * constants.height / 2 + 130)
-
-        self.display_text(font, "{}".format(best_cells),
-                          (255, 255, 255),
-                          constants.pixel_size * constants.width + 230,
-                          constants.pixel_size * constants.height / 2 + 150)
 
         # -------------------------------------------------------------------------------------
 

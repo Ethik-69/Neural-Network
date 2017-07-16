@@ -15,10 +15,11 @@ except ImportError, errmsg:
 
 
 class ParentCell(object):
-    def __init__(self, grid, n_inputs, n_hidden, n_outputs):
+    def __init__(self, grid, n_inputs, n_hidden, n_outputs, color):
         self.x = 0
         self.y = 0
         self.random_pos(grid)
+        self.color = color
         self.alive = True
         self.feeding = 0  # fitness
 
@@ -72,13 +73,14 @@ class ParentCell(object):
         #                (self.x * constants.pixel_size, self.y * constants.pixel_size,
         #                 (constants.pixel_size - 1) * (self.feeding / 20), (constants.pixel_size - 1) * (self.feeding / 20)))
         #else:
-        window.fill([255, 255, 255],
+        window.fill(self.color,
                     (self.x * constants.pixel_size, self.y * constants.pixel_size,
                     constants.pixel_size - 1, constants.pixel_size - 1))
 
     def move(self):
         """ Move the cell according to the network outputs """
         # print(self.brain.array_output) [up, right, down, left]
+
         if self.brain.array_output[0] > 0.5:
             self.y -= 1
             if self.y < 0:
@@ -101,8 +103,8 @@ class ParentCell(object):
 
 
 class Cell(ParentCell):
-    def __init__(self, grid, n_inputs, n_hidden, n_outputs):
-        ParentCell.__init__(self, grid, n_inputs, n_hidden, n_outputs)
+    def __init__(self, grid, n_inputs, n_hidden, n_outputs, color):
+        ParentCell.__init__(self, grid, n_inputs, n_hidden, n_outputs, color)
 
     def capture(self, grid):
         """ Detect the nearest grid cell with food in it """
@@ -168,14 +170,15 @@ class Cell(ParentCell):
         self.error = self.brain.back_propagate(targets)
 
         # ----------------------
-
+        grid.grid[self.x][self.y] = 0
         self.move()
         self.eat(grid)
+        grid.grid[self.x][self.y] = self
 
 
-class BadCell(ParentCell):
-    def __init__(self, grid, n_inputs, n_hidden, n_outputs, first_gen=False):
-        ParentCell.__init__(self, grid, n_inputs, n_hidden, n_outputs)
+class EvilCell(ParentCell):
+    def __init__(self, grid, n_inputs, n_hidden, n_outputs, color):
+        ParentCell.__init__(self, grid, n_inputs, n_hidden, n_outputs, color)
 
     def capture(self, grid):
         """ Detect the nearest grid cell with food in it """
@@ -194,9 +197,8 @@ class BadCell(ParentCell):
                     try:
                         if isinstance(grid[x][y], Cell):
                             self.sensor = [x, y]
-                        else:
-                            # pass
-                            grid[x][y] = 3  # Pour "voir" les senseurs
+                        elif self.view_sensors and grid[x][y] != 1:
+                            grid[x][y] = 4  # Pour "voir" les senseurs
                     except:
                         pass
             if self.sensor == [0, 0] and self.sensor_range < constants.bad_sensor_limit:
@@ -243,5 +245,7 @@ class BadCell(ParentCell):
 
         # ----------------------
 
+        grid.grid[self.x][self.y] = 0
         self.move()
         self.eat(grid)
+        grid.grid[self.x][self.y] = self
