@@ -106,9 +106,12 @@ class Simulation(object):
             self.grid.display(self.window)
 
             self.interface.display_info(self.average_fitness,
-                                    len(self.cells),
-                                    self.average_output,
-                                    self.average_error)
+                                        self.average_evil_fitness,
+                                        len(self.cells),
+                                        len(self.evil_cells),
+                                        self.average_output,
+                                        self.average_error,
+                                        self.average_evil_error)
 
             mouse_xy = pygame.mouse.get_pos()
 
@@ -169,7 +172,6 @@ class Simulation(object):
                 elif not self.view_sensors:
                     cell.view_sensors = False
 
-                cell.display(self.window)
             else:
                 self.cells.remove(cell)
 
@@ -184,23 +186,18 @@ class Simulation(object):
                 elif not self.view_sensors:
                     cell.view_sensors = False
 
-                cell.display(self.window)
             else:
                 self.cells.remove(cell)
 
     def update_all_cells_stop(self, mouse_xy):
         # Update and Draw cells
         for cell in self.cells:
-            if cell.alive:
-                cell.display(self.window)
             if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
                 print("[*] Cell Chosen")
                 self.interface.cell_to_display = cell
 
         # Update and Draw evil cells
         for cell in self.evil_cells:
-            if cell.alive:
-                cell.display(self.window)
             if cell.x == mouse_xy[0] / constants.pixel_size and cell.y == mouse_xy[1] / constants.pixel_size:
                 print("[*] Evil Cell Chosen")
                 self.interface.cell_to_display = cell
@@ -306,7 +303,13 @@ if __name__ == "__main__":
     simu.main()
 
 
-# TODO: corection bug white follow red !
+# TODO: food object !
+# TODO: correction bug radar, bord de map
+# TODO: corection bug black follow red ! (cell when eat/move calls)
+
 # TODO: Refacto + doc
+
+# IDEA: enemy detection (priority ? avoid enemy or got to food ?)
+# IDEA: no more than 1 cell per case
+# IDEA: add position allies
 # IDEA: add color to food (different color = different values) and give it to the network
-# IDEA: changer sensor, un nb de case vertical et horizontale ?

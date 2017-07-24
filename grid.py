@@ -3,6 +3,9 @@
 import constants
 import random
 
+from cell import Cell
+from cell import EvilCell
+
 
 class Grid(object):
     def __init__(self):
@@ -41,15 +44,22 @@ class Grid(object):
         for ligne in xrange(self.height):
             for colone in xrange(self.width):
                 try:
-                    colour = self.color_swich[self.grid[ligne][colone]]
+                    window.fill(self.grid[ligne][colone].color,
+                                (ligne * self.pixel_size,
+                                 colone * self.pixel_size,
+                                 self.pixel_size - 1,
+                                 self.pixel_size - 1))
                 except:
-                    colour = [255, 255, 255]
+                    try:
+                        colour = self.color_swich[self.grid[ligne][colone]]
+                    except:
+                        colour = [255, 255, 255]
 
-                if colour != [0, 0, 0]:
-                    window.fill(colour, (ligne * self.pixel_size,
-                                         colone * self.pixel_size,
-                                         self.pixel_size - 1,
-                                         self.pixel_size - 1))
+                    if colour != [0, 0, 0]:
+                        window.fill(colour, (ligne * self.pixel_size,
+                                             colone * self.pixel_size,
+                                             self.pixel_size - 1,
+                                             self.pixel_size - 1))
 
     def clean_grid(self):
         """ Clean the grid if 'view sensors' is active """

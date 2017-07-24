@@ -60,23 +60,6 @@ class ParentCell(object):
             if grid.grid[self.x][self.y] == 0:
                 randm = False
 
-    def display(self, window):
-        """
-        Select the color of the cell with the life left and drawn the cell
-        """
-
-        # drawn cell
-
-        # commented : upscale cells =)
-        #if self.feeding > 20:
-        #    window.fill([255, life, 255],
-        #                (self.x * constants.pixel_size, self.y * constants.pixel_size,
-        #                 (constants.pixel_size - 1) * (self.feeding / 20), (constants.pixel_size - 1) * (self.feeding / 20)))
-        #else:
-        window.fill(self.color,
-                    (self.x * constants.pixel_size, self.y * constants.pixel_size,
-                    constants.pixel_size - 1, constants.pixel_size - 1))
-
     def move(self):
         """ Move the cell according to the network outputs """
         # print(self.brain.array_output) [up, right, down, left]
@@ -127,6 +110,7 @@ class Cell(ParentCell):
                             grid[x][y] = 3  # Pour "voir" les senseurs
                     except:
                         pass
+
             if self.sensor == [0, 0] and self.sensor_range < constants.sensor_limit:
                 self.sensor_range += 1
             else:
