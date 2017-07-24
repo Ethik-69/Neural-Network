@@ -95,14 +95,23 @@ class Cell(ParentCell):
         self.sensor = [0, 0]
         sensor_on = True
         while sensor_on:
-            min_x_range = self.x - self.sensor_range
-            min_y_range = self.y - self.sensor_range
-            if min_x_range < 0:
-                min_x_range = 0
-            if min_y_range < 0:
-                min_y_range = 0
-            for x in range(min_x_range, self.x + self.sensor_range):
-                for y in range(min_y_range, self.y + self.sensor_range):
+            x_range = [x for x in range(self.x - self.sensor_range, self.x + self.sensor_range)]
+            y_range = [x for x in range(self.y - self.sensor_range, self.y + self.sensor_range)]
+
+            for i, item in enumerate(x_range):
+                if x_range[i] < 0:
+                    x_range[i] = constants.width + x_range[i]
+                elif x_range[i] > constants.width:
+                    x_range[i] = x_range[i] - constants.width
+
+            for i, item in enumerate(y_range):
+                if y_range[i] < 0:
+                    y_range[i] = constants.height + y_range[i]
+                elif y_range[i] > constants.height:
+                    y_range[i] = y_range[i] - constants.height
+
+            for i, x in enumerate(x_range):
+                for i, y in enumerate(y_range):
                     try:
                         if grid[x][y] == 1:
                             self.sensor = [x, y]
@@ -170,14 +179,23 @@ class EvilCell(ParentCell):
         self.sensor = [0, 0]
         sensor_on = True
         while sensor_on:
-            min_x_range = self.x - self.sensor_range
-            min_y_range = self.y - self.sensor_range
-            if min_x_range < 0:
-                min_x_range = 0
-            if min_y_range < 0:
-                min_y_range = 0
-            for x in range(min_x_range, self.x + self.sensor_range):
-                for y in range(min_y_range, self.y + self.sensor_range):
+            x_range = [x for x in range(self.x - self.sensor_range, self.x + self.sensor_range)]
+            y_range = [x for x in range(self.y - self.sensor_range, self.y + self.sensor_range)]
+
+            for i, item in enumerate(x_range):
+                if x_range[i] < 0:
+                    x_range[i] = constants.width + x_range[i]
+                elif x_range[i] > constants.width:
+                    x_range[i] = x_range[i] - constants.width
+
+            for i, item in enumerate(y_range):
+                if y_range[i] < 0:
+                    y_range[i] = constants.height + y_range[i]
+                elif y_range[i] > constants.height:
+                    y_range[i] = y_range[i] - constants.height
+
+            for i, x in enumerate(x_range):
+                for i, y in enumerate(y_range):
                     try:
                         if isinstance(grid[x][y], Cell):
                             self.sensor = [x, y]
