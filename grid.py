@@ -3,9 +3,6 @@
 import constants
 import random
 
-from cell import Cell
-from cell import EvilCell
-
 
 class Grid(object):
     def __init__(self):

@@ -73,10 +73,10 @@ class Simulation(object):
     def add_evil_cell(self):
         """ Create a new evil cell """
         return EvilCell(self.grid,
-                    constants.n_inputs,
-                    constants.n_hidden,
-                    constants.n_outputs,
-                    (255, 0, 0))
+                        constants.n_inputs,
+                        constants.n_hidden,
+                        constants.n_outputs,
+                        (255, 0, 0))
 
     def init_population(self):
         """ Initialise all cells """
@@ -244,10 +244,6 @@ class Simulation(object):
         self.create_buttons()
 
         while self.run:
-
-            if len(self.cells) == 0:
-                self.end()
-
             self.window.fill((10, 10, 10))
 
             self.interface.update("start", self.view_sensors)
@@ -265,6 +261,11 @@ class Simulation(object):
 
             self.reset_averages()
             self.update_all_cells_main()
+
+            if len(self.cells) == 0:
+                self.end()
+                break
+
             self.calc_averages()
 
             self.time += 1
@@ -304,7 +305,6 @@ if __name__ == "__main__":
 
 
 # TODO: food object !
-# TODO: correction bug radar, bord de map
 # TODO: corection bug black follow red ! (cell when eat/move calls)
 
 # TODO: Refacto + doc

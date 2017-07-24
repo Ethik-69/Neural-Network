@@ -15,9 +15,9 @@ class Graph(object):
         plt.style.use('ggplot')
         plt.xlabel('Time')
         plt.ylabel('Error')
-        self.x = [0]
-        self.y = [0]
-        self.best = [0]
+        self.x = []
+        self.y = []
+        self.best = []
         self.axis_x = 0.01
         self.axis_y = 0.01
         plt.axis([0, self.axis_x, 0, self.axis_y])
